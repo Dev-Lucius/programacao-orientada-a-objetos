@@ -1,26 +1,28 @@
 public class Main{
     public static void main (String[] args){
-        // Aula 1 - POO
-
-        // POO tem como foco principal é atingir é a ABSTRAÇÃO
-        // Manipular determinados comportamentos do Código
-        // Trata-se de Codar para prevenir erros futuros!
-
-        // Ao abstrir um comportamento ele se torna "limpo"
-        // Isto é, mais utilizável, testável e afins
-        
-        // Abstrair um ... Controle E Portão de Garagem
-        // - apertar o botao!!
-        // - dependendo do estado anterior e estado atual, vai realizar uma ação!!
-
-        /* 
-            - estados possíveis
-                * Movimento
-                * aberto
-                * fechado
-            - ações possíveis
-                * apertar o botao
-        */
+        /*
+         * ==========================================================
+         * AULA 1 - FUNDAMENTOS DE PROGRAMAÇÃO ORIENTADA A OBJETOS
+         * ==========================================================
+         *
+         * Objetivo:
+         * Demonstrar o conceito de ABSTRAÇÃO através da modelagem
+         * de um Portão Elétrico.
+         *
+         * Ideia principal:
+         * O usuário interage apenas com o comportamento do objeto
+         * (apertar botão), sem conhecer sua implementação interna.
+         *
+         * Estados possíveis do portão:
+         *  - Aberto
+         *  - Fechado
+         *  - Em movimento
+         *
+         * Ação possível:
+         *  - Apertar botão
+         *
+         * A lógica interna decide a transição de estados.
+         */
 
        // Inicialmente Fechado
        PortaoEletrico portao = new PortaoEletrico();
