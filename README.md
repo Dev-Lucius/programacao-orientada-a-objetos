@@ -91,11 +91,11 @@ moderna.
 ------------------------------------------------------------------------
 
 ## 📂 Estrutura de Diretórios
-
+```
 POO/ ├── java/ │ ├── fundamentos/ │ ├── heranca/ │ ├── polimorfismo/ │
 ├── solid/ │ └── design-patterns/ ├── typescript/ │ ├── fundamentos/ │
 ├── interfaces/ │ ├── solid/ │ └── design-patterns/ └── modelagem/
-
+```
 ------------------------------------------------------------------------
 
 ## 🛠 Tecnologias
