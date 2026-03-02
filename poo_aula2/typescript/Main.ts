@@ -1,0 +1,1 @@
+// To Do -> Implementar em TypeScript o que foi abordado em Java
