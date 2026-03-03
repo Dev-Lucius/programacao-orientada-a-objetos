@@ -1,11 +1,11 @@
 public class SessaoVotacao {
 
     private int votacao = 0;
-    int totalSim = 0;
-    int totalNao = 0;
+    private int totalSim = 0;
+    private int totalNao = 0;
+    private int totalVotos = 0;
 
-    // Começa a Votação
-    boolean condicao;
+    boolean condicao = false;
     public boolean abrir(){
         condicao = true;
         return condicao;
@@ -20,16 +20,19 @@ public class SessaoVotacao {
         if(condicao){
             votacao = votacao + 1;
             totalSim++;
+            totalVotos++;
         }
     }
 
     public void votarNao(){
-        System.out.println("ignorado");
-        totalNao++;
+        if(condicao){
+            totalNao++;
+            totalVotos++;
+        }
     }
 
     public int total(){
-        return votacao;
+        return totalVotos;
     }
 
     public int sim() {
