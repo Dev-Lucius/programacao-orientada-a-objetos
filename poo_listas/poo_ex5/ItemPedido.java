@@ -17,14 +17,13 @@ public class ItemPedido {
         | `valor`      | preço unitário      |
         | `quantidade` | quantidade comprada |
     */
-   private String nome;
+    private String nome;
     private double valor;
     private int quantidade;
 
     // Verificando se os parâmetros são válidos antes de atribuí-los aos atributos.
      // IllegalArgumentException é uma exceção do Java que indica que um argumento passado para um método é inválido.
     public ItemPedido(String nome, double valor, int quantidade) {
-        // isBlank() é um método da classe String que verifica se a string é vazia ou contém apenas espaços em branco.
         if (nome == null) {
             throw new IllegalArgumentException("nome não pode ser vazio");
         }
