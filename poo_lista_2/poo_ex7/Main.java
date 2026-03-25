@@ -13,10 +13,6 @@ public class Main {
         pf.adicionarTurma(t2);
         pf.adicionarTurma(t3);
 
-        pf.acessarTurma(t1);
-        pf.acessarTurma(t2);
-        pf.acessarTurma(t3);
-
-        
+        pf.acessarTurma();
     }
 }
