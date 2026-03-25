@@ -8,6 +8,12 @@ public class Professor {
     private int id;
     private String nome;
 
+    public Professor(int id, String nome){
+        setIdProfessor(id);
+        setNomeProfessor(nome);
+        this.turmas = new ArrayList<>();
+    }
+
     // Um professor pode ter 1 ou várias turmas
     private final List<Turma> turmas;
 
@@ -52,6 +58,22 @@ public class Professor {
     }
 
     public void acessarTurma(){
-        // TO DO;
+        System.out.println("ID: " + id);
+        System.out.println("Nome: " + nome);
+        System.out.println("Turma " + turmas.size() + "):");
+
+        if(turmas.isEmpty()){
+            System.out.println("Nenhuma Turma Encontrada");
+        } else{
+
+            for (Turma t : turmas) {
+                System.out.println(" - " + t);
+            }
+        }
+    }
+
+    @Override
+    public String toString(){
+        return "Professor #" + id + " - " + nome;
     }
 }
