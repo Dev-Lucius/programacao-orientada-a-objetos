@@ -20,11 +20,7 @@ public class Biblioteca {
 
     private String nome;
     private final List<Livro> livros;
-
-    // -------------------------------------------------------
-    // CONSTRUTOR
-    // -------------------------------------------------------
-
+    
     /**
      * Construtor da Biblioteca.
      *
@@ -34,10 +30,6 @@ public class Biblioteca {
         setNomeBiblioteca(nome);
         this.livros = new ArrayList<>();
     }
-
-    // -------------------------------------------------------
-    // SETTER
-    // -------------------------------------------------------
 
     public void setNomeBiblioteca(String nome) {
         if (nome == null || nome.trim().isEmpty()) {
