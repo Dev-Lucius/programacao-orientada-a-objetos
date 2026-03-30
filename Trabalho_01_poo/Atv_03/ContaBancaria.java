@@ -12,6 +12,7 @@ public class ContaBancaria {
     private double saldo;
     private List<Transacao> historico; // <-- Uma lista para as transações
 
+    // Construtor da ContaBancaria
     public ContaBancaria(int id, String titular, String cpf, double saldo){
         setId(id);
         setTitular(titular);
@@ -37,7 +38,7 @@ public class ContaBancaria {
     }
 
     public void setCPF(String cpf){
-        if(titular == null || titular.trim().isEmpty()){
+        if(cpf == null || cpf.trim().isEmpty()){
             System.out.println("CPF Inválido");
         } else if(cpf.length() != 11) {
             System.out.println("CPF Inválido");
@@ -73,6 +74,8 @@ public class ContaBancaria {
     }
 
     public List<Transacao> getHistorico() {
+        // método utilitário que cria uma visualização (view) somente leitura de uma lista original
+        // Qualquer tentativa de modificar essa nova lista, lançará um erro
         return Collections.unmodifiableList(historico);
     }
 }
