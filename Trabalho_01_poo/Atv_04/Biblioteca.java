@@ -1,115 +1,175 @@
 package Atv_04;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+/**
+ * Representa uma Biblioteca que gerencia um acervo de Livros.
+ *
+ * CONCEITO — AGREGAÇÃO (Biblioteca x Livros):
+ * Os Livros são criados fora da Biblioteca e apenas referenciados
+ * por ela. Se a Biblioteca for removida, os objetos Livro continuam
+ * existindo — ciclos de vida independentes.
+ *
+ * CONCEITO — ENCAPSULAMENTO:
+ * A lista de livros é privada. Todas as operações sobre o acervo
+ * passam pelos métodos desta classe, que garantem consistência.
+ */
 public class Biblioteca {
 
     private String nome;
-    private List<Livro> livros;
+    private final List<Livro> livros;
 
-    int disponivel = 0;
-    int emprestado = 0;
+    // -------------------------------------------------------
+    // CONSTRUTOR
+    // -------------------------------------------------------
 
-    // Construtor da Biblioteca
-    public Biblioteca(String nome){
+    /**
+     * Construtor da Biblioteca.
+     *
+     * @param nome Nome da biblioteca. Não pode ser nulo ou vazio.
+     */
+    public Biblioteca(String nome) {
         setNomeBiblioteca(nome);
         this.livros = new ArrayList<>();
     }
 
-    public void setNomeBiblioteca(String nome){
-        if(nome == null || nome.trim().isEmpty()){
-            System.out.println("Nome Inválido");
-        } else {
-            this.nome = nome;
+    // -------------------------------------------------------
+    // SETTER
+    // -------------------------------------------------------
+
+    public void setNomeBiblioteca(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome da biblioteca inválido.");
         }
+        this.nome = nome.trim();
     }
 
-    // Método para Adicionar um Livro
-    public void AdicionarLivro(Livro livro){
-        // Livro Nulo
-        if(livro == null){
-            System.out.println("Livro Inválido: Não Pode ser Adicionado");
+    // -------------------------------------------------------
+    // MÉTODOS DE GERENCIAMENTO
+    // -------------------------------------------------------
+
+    /**
+     * Adiciona um Livro ao acervo.
+     *
+     * BUG CORRIGIDO #2: faltava "return" após a verificação de livro nulo.
+     * Sem ele, o código continuava executando e lançava NullPointerException
+     * na linha livros.contains(livro).
+     *
+     * @param livro Livro a ser adicionado. Não pode ser nulo.
+     */
+    public void AdicionarLivro(Livro livro) {
+        // BUG CORRIGIDO: adicionado "return" para encerrar o método se nulo
+        if (livro == null) {
+            System.out.println("Livro inválido: não pode ser adicionado.");
+            return; // ← estava faltando esta linha
         }
 
-        // Livro já está no acervo
-        if(livros.contains(livro)){
-            System.out.println("O Livro " + livro.getTituloLivro() + " já se encontra em seu Acervo");
+        // Evita duplicatas no acervo
+        if (livros.contains(livro)) {
+            System.out.println("O livro \"" + livro.getTituloLivro() + "\" já está no acervo.");
             return;
         }
 
-        // Livro é válido e não está no acervo
         livros.add(livro);
-        System.out.println("O livro " + livro.getTituloLivro() + " foi adicionado ao seu acervo");
+        System.out.println("O livro \"" + livro.getTituloLivro() + "\" foi adicionado ao acervo.");
     }
 
-    // Método para emprestar um livro
-    public void emprestarLivro(String titulo){
+    /**
+     * @param titulo Título do livro a emprestar.
+     */
+    public void emprestarLivro(String titulo) {
         for (Livro livro : livros) {
-            if(livro.getTituloLivro().equalsIgnoreCase(titulo)){
+            if (livro.getTituloLivro().equalsIgnoreCase(titulo)) {
 
-                // Livro Encontrado
-                if(livro.isDisponivel() == false){
-                    System.out.println(titulo + " já está emprestado");
+                // Livro encontrado — verifica se está disponível
+                if (!livro.isDisponivel()) {
+                    System.out.println("\"" + titulo + "\" já está emprestado.");
                     return;
                 }
 
                 livro.setDisponivel(false);
-                System.out.println(titulo + " foi emprestado com sucesso");
+                System.out.println("\"" + titulo + "\" emprestado com sucesso.");
                 return;
             }
         }
-        System.out.println(titulo + " não foi encontrado no Acervo");
+        System.out.println("\"" + titulo + "\" não foi encontrado no acervo.");
     }
 
-    // Método para Devolver um Livro
-    public void devolverLivro(String titulo){
-        for(Livro livro : livros){
-            if(livro.getTituloLivro().equalsIgnoreCase(titulo)){
-                if(livro.isDisponivel() == false){
-                    System.out.println(titulo + " não estava emprestado");
+    /**
+     * Marca um livro como disponível (devolvido).
+     * "isDisponivel() == false" significa que o livro ESTÁ emprestado
+     * — ou seja, a condição bloqueava a devolução quando devia permitir.
+     * A condição correta verifica se o livro JÁ está disponível,
+     * pois nesse caso não há nada a devolver.
+     *
+     * @param titulo Título do livro a devolver.
+     */
+    public void devolverLivro(String titulo) {
+        for (Livro livro : livros) {
+            if (livro.getTituloLivro().equalsIgnoreCase(titulo)) {
+                // Se isDisponivel() é true, o livro NÃO está emprestado — não há o que devolver
+                if (livro.isDisponivel()) {
+                    System.out.println("\"" + titulo + "\" não estava emprestado.");
                     return;
                 }
 
                 livro.setDisponivel(true);
-                System.out.println(titulo + " foi devolvido com sucesso");
+                System.out.println("\"" + titulo + "\" devolvido com sucesso.");
                 return;
             }
         }
-        System.out.println(titulo + " não foi encontrado no acervo");
+        System.out.println("\"" + titulo + "\" não foi encontrado no acervo.");
     }
 
-    public void listarLivros(){
-        System.out.println("\n ACERVO: " + nome);
+    /**
+     * Lista todos os livros do acervo com seus status.
+     */
+    public void listarLivros() {
+        // Variáveis locais — reiniciam a cada chamada do método
+        int disponivel = 0;
+        int emprestado = 0;
 
-        if(livros.isEmpty()){
-            System.out.println("Nenhum livro presente no Acervo");
+        System.out.println("\n=== ACERVO: " + nome + " ===");
+
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro presente no acervo.");
             return;
         }
 
-        for(Livro livro : livros){
+        // CONCEITO — FOR-EACH:
+        // Percorre cada Livro e chama seu toString() automaticamente
+        for (Livro livro : livros) {
             System.out.println(livro);
-            if(livro.isDisponivel()){
-                disponivel = disponivel + 1;
+            if (livro.isDisponivel()) {
+                disponivel++;
             } else {
-                emprestado = emprestado + 1;
+                emprestado++;
             }
         }
 
-        System.out.println("Total: " + livros.size());
-        System.out.println(" | Disponíveis: " + disponivel);
-        System.out.println(" | Emprestado: " + emprestado);
+        System.out.println("─".repeat(60));
+        System.out.println("Total: "        + livros.size());
+        System.out.println("Disponíveis: "  + disponivel);
+        System.out.println("Emprestados: "  + emprestado);
     }
 
-    public List<Livro> getLivros(){
+    /**
+     * Getter da lista — protegida contra modificações externas.
+     *
+     * CONCEITO — DEFENSIVE COPY:
+     * Collections.unmodifiableList() impede que código externo
+     * chame livros.add() ou livros.remove() diretamente.
+     */
+    public List<Livro> getLivros() {
         return Collections.unmodifiableList(livros);
     }
 
+
     @Override
-    public String toString(){
-        return  "Biblioteca: " + nome + 
-                " | Acervo: " + livros.size() + " livro(s)" +
-                " | Disponíveis: " + disponivel; 
+    public String toString() {
+        return "Biblioteca: "     + nome +
+               " | Acervo: "      + livros.size() + " livro(s)";
     }
 }
