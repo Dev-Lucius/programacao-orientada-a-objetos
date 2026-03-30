@@ -23,6 +23,11 @@ public class Livro {
         return disponivel;
     }
 
+    // Setters
+    public void setDisponivel(boolean disponivel){
+        this.disponivel = disponivel;
+    }
+
     public void setIdLivro(int id) {
         if(id <= 0){
             System.out.println("ID inválido");
@@ -44,7 +49,8 @@ public class Livro {
         this.autor = autor;
     }
 
-    public Livro(int id, String titulo, String autor, boolean disponivel){
+    // Construtor de Livro
+    public Livro(int i, String titulo, String autor){
         setIdLivro(id);
         setTituloLivro(titulo);
         setAutorLivro(autor);
