@@ -52,18 +52,12 @@ public class Biblioteca {
 
     /**
      * Adiciona um Livro ao acervo.
-     *
-     * BUG CORRIGIDO #2: faltava "return" após a verificação de livro nulo.
-     * Sem ele, o código continuava executando e lançava NullPointerException
-     * na linha livros.contains(livro).
-     *
      * @param livro Livro a ser adicionado. Não pode ser nulo.
      */
     public void AdicionarLivro(Livro livro) {
-        // BUG CORRIGIDO: adicionado "return" para encerrar o método se nulo
         if (livro == null) {
             System.out.println("Livro inválido: não pode ser adicionado.");
-            return; // ← estava faltando esta linha
+            return; /
         }
 
         // Evita duplicatas no acervo
