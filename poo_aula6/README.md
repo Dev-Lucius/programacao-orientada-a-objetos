@@ -34,6 +34,15 @@
 7. [Casting de Objetos](#7-casting-de-objetos)
 8. [Boas Práticas e Princípios SOLID](#8-boas-práticas-e-princípios-solid)
 9. [Resumo Visual Comparativo](#9-resumo-visual-comparativo)
+10. [JPanel — Herança e Interfaces no Java Swing](#10-jpanel--herança-e-interfaces-no-java-swing)
+    - [O que é o JPanel?](#101-o-que-é-o-jpanel)
+    - [Hierarquia de Classes do Swing](#102-hierarquia-de-classes-do-swing)
+    - [Estendendo JPanel com Herança](#103-estendendo-jpanel-com-herança)
+    - [Interfaces Mais Usadas no Swing](#104-interfaces-mais-usadas-no-swing)
+    - [Layouts e Composição de Painéis](#105-layouts-e-composição-de-painéis)
+    - [Exemplo Completo — Formulário de Cadastro](#106-exemplo-completo--formulário-de-cadastro)
+    - [Exemplo Completo — Jogo com Painel Gráfico](#107-exemplo-completo--jogo-com-painel-gráfico)
+    - [Boas Práticas com JPanel](#108-boas-práticas-com-jpanel)
 
 ---
 
@@ -889,6 +898,504 @@ Notificavel notificador = new EmailNotificador();
 │  HERANÇA:        Simples           |  Múltipla                    │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 10. JPanel — Herança e Interfaces no Java Swing
+
+O `JPanel` é um dos componentes mais usados do **Java Swing**, a biblioteca padrão do Java para construção de interfaces gráficas (GUI). Estudá-lo é uma forma excelente de ver **herança e interfaces aplicadas em um contexto real e prático**.
+
+---
+
+### 10.1 O que é o JPanel?
+
+O `JPanel` é um **contêiner leve** e de propósito geral que serve para organizar e agrupar outros componentes visuais dentro de uma janela Swing. Ele não possui decoração própria (sem barra de título, bordas nativas, etc.) — sua função é ser um **espaço flexível** para compor a interface.
+
+Usos típicos do `JPanel`:
+- Agrupar botões, campos de texto e rótulos em áreas lógicas da tela.
+- Dividir a janela em regiões com layouts diferentes.
+- Servir de **tela de desenho** personalizada (substituindo `paintComponent`).
+- Criar telas de um sistema com múltiplas "páginas" usando `CardLayout`.
+
+---
+
+### 10.2 Hierarquia de Classes do Swing
+
+Para entender o `JPanel`, é fundamental conhecer a cadeia de herança que ele carrega:
+
+```
+java.lang.Object
+    └── java.awt.Component          ← Propriedades visuais básicas (cor, fonte, tamanho)
+          └── java.awt.Container    ← Pode conter outros componentes
+                └── javax.swing.JComponent  ← Base de todos os componentes Swing
+                      └── javax.swing.JPanel  ← Contêiner leve e customizável
+```
+
+Isso significa que ao usar ou estender `JPanel`, você herda **automaticamente** uma enorme quantidade de comportamentos já implementados:
+
+| Classe Herdada | O que você ganha |
+|---|---|
+| `Component` | `setSize()`, `setVisible()`, `setBackground()`, `setFont()`, `repaint()` |
+| `Container` | `add()`, `remove()`, `setLayout()`, `getComponents()` |
+| `JComponent` | `setBorder()`, `setOpaque()`, `paintComponent()`, `setToolTipText()` |
+| `JPanel` | Contêiner duplo-buffer, pronto para uso imediato |
+
+---
+
+### 10.3 Estendendo JPanel com Herança
+
+A forma mais poderosa de usar `JPanel` em projetos reais é **estendê-lo com herança**. Isso permite encapsular a lógica e os componentes de uma tela ou área específica dentro de uma classe própria, tornando o código organizado e reutilizável.
+
+#### Uso Simples (sem herança)
+
+```java
+import javax.swing.*;
+import java.awt.*;
+
+public class Main {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Exemplo simples");
+        JPanel painel = new JPanel();
+
+        painel.setBackground(Color.LIGHT_GRAY);
+        painel.add(new JLabel("Olá, Swing!"));
+        painel.add(new JButton("Clique aqui"));
+
+        frame.add(painel);
+        frame.setSize(300, 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+}
+```
+
+#### Uso com Herança (recomendado para projetos maiores)
+
+```java
+import javax.swing.*;
+import java.awt.*;
+
+// Painel encapsulado como classe própria
+public class PainelBoasVindas extends JPanel {
+
+    private JLabel  labelMensagem;
+    private JButton botaoEntrar;
+
+    public PainelBoasVindas() {
+        setBackground(new Color(30, 30, 50));
+        setLayout(new BorderLayout(10, 10));
+        inicializarComponentes();
+    }
+
+    private void inicializarComponentes() {
+        labelMensagem = new JLabel("Bem-vindo ao Sistema!", SwingConstants.CENTER);
+        labelMensagem.setFont(new Font("Arial", Font.BOLD, 22));
+        labelMensagem.setForeground(Color.WHITE);
+
+        botaoEntrar = new JButton("Entrar");
+        botaoEntrar.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        add(labelMensagem, BorderLayout.CENTER);
+        add(botaoEntrar,   BorderLayout.SOUTH);
+    }
+
+    public JButton getBotaoEntrar() {
+        return botaoEntrar;
+    }
+}
+
+// Janela principal que usa o painel
+public class JanelaPrincipal extends JFrame {
+
+    public JanelaPrincipal() {
+        setTitle("Minha Aplicação");
+        setSize(400, 300);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        PainelBoasVindas painel = new PainelBoasVindas();
+        add(painel);
+
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(JanelaPrincipal::new);
+    }
+}
+```
+
+> 📌 **Vantagem da herança aqui:** O `PainelBoasVindas` é uma unidade coesa e reutilizável. Você pode adicioná-lo a qualquer `JFrame` sem reescrever nada.
+
+---
+
+### 10.4 Interfaces Mais Usadas no Swing
+
+O Swing faz uso extensivo de interfaces para tratar **eventos** (cliques, teclado, mouse, etc.). Cada tipo de evento possui sua própria interface de *listener*, que você implementa para definir o que acontece quando o evento ocorre.
+
+#### As principais interfaces de eventos:
+
+| Interface | Método(s) principal(is) | Quando usar |
+|---|---|---|
+| `ActionListener` | `actionPerformed(ActionEvent e)` | Clique em botão, Enter em campo de texto |
+| `MouseListener` | `mouseClicked`, `mousePressed`, `mouseReleased`, `mouseEntered`, `mouseExited` | Interações com o mouse |
+| `MouseMotionListener` | `mouseMoved`, `mouseDragged` | Movimento e arraste do mouse |
+| `KeyListener` | `keyPressed`, `keyReleased`, `keyTyped` | Entrada de teclado |
+| `WindowListener` | `windowClosing`, `windowOpened`, etc. | Eventos da janela |
+| `FocusListener` | `focusGained`, `focusLost` | Foco em componentes |
+| `ItemListener` | `itemStateChanged` | CheckBox, ComboBox |
+| `DocumentListener` | `insertUpdate`, `removeUpdate`, `changedUpdate` | Alterações em campos de texto |
+
+#### Exemplo com `ActionListener`:
+
+```java
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class PainelContador extends JPanel implements ActionListener {
+
+    private int     contador = 0;
+    private JLabel  labelContador;
+    private JButton botaoIncrementar;
+    private JButton botaoZerar;
+
+    public PainelContador() {
+        setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+
+        labelContador    = new JLabel("0", SwingConstants.CENTER);
+        labelContador.setFont(new Font("Arial", Font.BOLD, 48));
+
+        botaoIncrementar = new JButton("+1");
+        botaoZerar       = new JButton("Zerar");
+
+        botaoIncrementar.addActionListener(this);
+        botaoZerar.addActionListener(this);
+
+        add(labelContador);
+        add(botaoIncrementar);
+        add(botaoZerar);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == botaoIncrementar) {
+            contador++;
+        } else if (e.getSource() == botaoZerar) {
+            contador = 0;
+        }
+        labelContador.setText(String.valueOf(contador));
+    }
+}
+```
+
+#### Alternativa moderna com Lambda (Java 8+):
+
+```java
+// Em vez de implementar ActionListener na classe,
+// use expressões lambda diretamente:
+botaoIncrementar.addActionListener(e -> {
+    contador++;
+    labelContador.setText(String.valueOf(contador));
+});
+
+botaoZerar.addActionListener(e -> {
+    contador = 0;
+    labelContador.setText("0");
+});
+```
+
+> 📌 `ActionListener` é uma **interface funcional** — por isso a sintaxe lambda funciona perfeitamente com ela.
+
+---
+
+### 10.5 Layouts e Composição de Painéis
+
+Um dos poderes do `JPanel` é poder receber diferentes **gerenciadores de layout**, que controlam como os componentes são posicionados dentro do painel.
+
+| Layout | Comportamento |
+|---|---|
+| `FlowLayout` | Componentes em linha, da esquerda para direita (padrão do `JPanel`). |
+| `BorderLayout` | Divide em 5 regiões: NORTH, SOUTH, EAST, WEST, CENTER. |
+| `GridLayout` | Grade de células iguais (linhas × colunas). |
+| `GridBagLayout` | Grade flexível com controle fino de posição e tamanho. |
+| `BoxLayout` | Empilha componentes horizontal ou verticalmente. |
+| `CardLayout` | Empilha painéis como cartas — exibe um por vez (útil para múltiplas telas). |
+| `null` (AbsoluteLayout) | Posicionamento manual com `setBounds()`. Evite — não é responsivo. |
+
+#### Compondo múltiplos painéis:
+
+```java
+import javax.swing.*;
+import java.awt.*;
+
+public class JanelaPrincipal extends JFrame {
+
+    public JanelaPrincipal() {
+        setTitle("Layout Composto");
+        setSize(500, 400);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Painel do topo — cabeçalho
+        JPanel painelTopo = new JPanel();
+        painelTopo.setBackground(new Color(0, 102, 204));
+        painelTopo.add(criarLabel("Sistema de Cadastro", Color.WHITE, 18));
+
+        // Painel central — área principal
+        JPanel painelCentro = new JPanel(new GridLayout(3, 2, 10, 10));
+        painelCentro.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        painelCentro.add(new JLabel("Nome:"));
+        painelCentro.add(new JTextField());
+        painelCentro.add(new JLabel("E-mail:"));
+        painelCentro.add(new JTextField());
+        painelCentro.add(new JLabel("Idade:"));
+        painelCentro.add(new JTextField());
+
+        // Painel inferior — botões
+        JPanel painelRodape = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        painelRodape.add(new JButton("Cancelar"));
+        painelRodape.add(new JButton("Salvar"));
+
+        add(painelTopo,   BorderLayout.NORTH);
+        add(painelCentro, BorderLayout.CENTER);
+        add(painelRodape, BorderLayout.SOUTH);
+
+        setVisible(true);
+    }
+
+    private JLabel criarLabel(String texto, Color cor, int tamanho) {
+        JLabel label = new JLabel(texto);
+        label.setForeground(cor);
+        label.setFont(new Font("Arial", Font.BOLD, tamanho));
+        return label;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(JanelaPrincipal::new);
+    }
+}
+```
+
+---
+
+### 10.6 Exemplo Completo — Formulário de Cadastro
+
+Este exemplo demonstra herança (`extends JPanel`), interfaces de evento (`ActionListener`, `DocumentListener`) e composição de painéis em um formulário funcional.
+
+```java
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PainelCadastro extends JPanel implements ActionListener {
+
+    private JTextField  campNome;
+    private JTextField  campEmail;
+    private JButton     btnSalvar;
+    private JButton     btnLimpar;
+    private JTextArea   areaLog;
+    private List<String> cadastros = new ArrayList<>();
+
+    public PainelCadastro() {
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        add(criarPainelFormulario(), BorderLayout.NORTH);
+        add(criarPainelLog(),        BorderLayout.CENTER);
+        add(criarPainelBotoes(),     BorderLayout.SOUTH);
+
+        configurarValidacao();
+    }
+
+    private JPanel criarPainelFormulario() {
+        JPanel painel = new JPanel(new GridLayout(2, 2, 8, 8));
+
+        campNome  = new JTextField();
+        campEmail = new JTextField();
+
+        painel.add(new JLabel("Nome:"));
+        painel.add(campNome);
+        painel.add(new JLabel("E-mail:"));
+        painel.add(campEmail);
+
+        return painel;
+    }
+
+    private JScrollPane criarPainelLog() {
+        areaLog = new JTextArea(8, 30);
+        areaLog.setEditable(false);
+        areaLog.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        areaLog.setText("--- Cadastros realizados ---\n");
+        return new JScrollPane(areaLog);
+    }
+
+    private JPanel criarPainelBotoes() {
+        JPanel painel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        btnLimpar = new JButton("Limpar");
+        btnSalvar = new JButton("Salvar");
+        btnSalvar.setEnabled(false);
+
+        btnSalvar.addActionListener(this);
+        btnLimpar.addActionListener(this);
+
+        painel.add(btnLimpar);
+        painel.add(btnSalvar);
+
+        return painel;
+    }
+
+    private void configurarValidacao() {
+        DocumentListener validador = new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e)  { validarCampos(); }
+            @Override public void removeUpdate(DocumentEvent e)  { validarCampos(); }
+            @Override public void changedUpdate(DocumentEvent e) { validarCampos(); }
+        };
+
+        campNome.getDocument().addDocumentListener(validador);
+        campEmail.getDocument().addDocumentListener(validador);
+    }
+
+    private void validarCampos() {
+        boolean nomeOk  = !campNome.getText().trim().isEmpty();
+        boolean emailOk = !campEmail.getText().trim().isEmpty();
+        btnSalvar.setEnabled(nomeOk && emailOk);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == btnSalvar) {
+            String registro = campNome.getText().trim()
+                            + " | " + campEmail.getText().trim();
+            cadastros.add(registro);
+            areaLog.append("✔ " + registro + "\n");
+            limparCampos();
+
+        } else if (e.getSource() == btnLimpar) {
+            limparCampos();
+        }
+    }
+
+    private void limparCampos() {
+        campNome.setText("");
+        campEmail.setText("");
+        campNome.requestFocus();
+    }
+}
+
+public class AppCadastro extends JFrame {
+
+    public AppCadastro() {
+        setTitle("Cadastro de Usuários");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        add(new PainelCadastro());
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(AppCadastro::new);
+    }
+}
+```
+
+---
+
+### 10.7 Exemplo Completo — Jogo com Painel Gráfico
+
+Um uso avançado e muito didático do `JPanel` é como **superfície de desenho** — sobrescrevendo `paintComponent()` para criar animações e jogos simples. Aqui o `KeyListener` também entra em ação.
+
+```java
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class PainelJogo extends JPanel implements KeyListener {
+
+    private int playerX    = 200;
+    private int playerY    = 200;
+    private int tamanho    = 30;
+    private int velocidade = 10;
+
+    public PainelJogo() {
+        setBackground(Color.BLACK);
+        setFocusable(true);
+        addKeyListener(this);
+    }
+
+    // Sobrescrita do método herdado de JComponent
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g); // SEMPRE chamar super
+
+        g.setColor(Color.CYAN);
+        g.fillRect(playerX, playerY, tamanho, tamanho);
+
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.PLAIN, 14));
+        g.drawString("Use as setas do teclado para mover", 10, 20);
+        g.drawString("X: " + playerX + "  Y: " + playerY, 10, 40);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP    -> playerY -= velocidade;
+            case KeyEvent.VK_DOWN  -> playerY += velocidade;
+            case KeyEvent.VK_LEFT  -> playerX -= velocidade;
+            case KeyEvent.VK_RIGHT -> playerX += velocidade;
+        }
+        repaint(); // Redesenha o painel com os novos dados
+    }
+
+    @Override public void keyReleased(KeyEvent e) {}
+    @Override public void keyTyped(KeyEvent e)    {}
+}
+
+public class AppJogo extends JFrame {
+
+    public AppJogo() {
+        setTitle("Mini Jogo com JPanel");
+        setSize(500, 500);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        add(new PainelJogo());
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(AppJogo::new);
+    }
+}
+```
+
+**O que o `repaint()` faz?**
+Ele agenda uma chamada a `paintComponent()` na EDT (Event Dispatch Thread), redesenhando o painel com os dados atualizados — é o mecanismo básico de animação no Swing.
+
+---
+
+### 10.8 Boas Práticas com JPanel
+
+| Prática | Por quê? |
+|---|---|
+| Sempre chamar `super.paintComponent(g)` | Evita artefatos visuais de frames anteriores. |
+| Criar a UI dentro de `SwingUtilities.invokeLater()` | Garante que a criação ocorra na EDT (thread segura para Swing). |
+| Encapsular painéis em classes próprias (`extends JPanel`) | Organização, coesão e reutilização de código. |
+| Preferir lambdas a classes anônimas para listeners simples | Código mais legível e conciso. |
+| Evitar `null` layout (`setLayout(null)`) | Interfaces quebram em resoluções ou sistemas operacionais diferentes. |
+| Usar `pack()` na `JFrame` em vez de `setSize()` | A janela se ajusta automaticamente ao tamanho dos componentes. |
+| Separar lógica de negócio da UI | Não coloque regras de negócio dentro do `JPanel`; use camadas separadas (MVC). |
+
+---
+
+> 🎯 **Conclusão da seção:** O `JPanel` é um exemplo perfeito de como a POO em Java se materializa na prática. Ao estendê-lo, você usa **herança** para reaproveitar toda a infraestrutura visual do Swing. Ao implementar `ActionListener`, `KeyListener` e outros, você usa **interfaces** para reagir a eventos de forma desacoplada e flexível. Dominar o `JPanel` é dominar a POO aplicada.
 
 ---
 
