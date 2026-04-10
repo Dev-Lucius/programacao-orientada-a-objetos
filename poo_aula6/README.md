@@ -69,7 +69,7 @@ Herança é o mecanismo pelo qual uma classe (**subclasse** ou classe filha) adq
 
 ```
 Exemplo de relação:
-  Animal  ←── Cachorro
+  Animal  <-- Cachorro
   "Cachorro É UM Animal"
 ```
 
