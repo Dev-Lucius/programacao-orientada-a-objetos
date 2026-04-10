@@ -34,7 +34,6 @@
 7. [Casting de Objetos](#7-casting-de-objetos)
 8. [Boas Práticas e Princípios SOLID](#8-boas-práticas-e-princípios-solid)
 9. [Resumo Visual Comparativo](#9-resumo-visual-comparativo)
-10. [Exercícios Propostos](#10-exercícios-propostos)
 
 ---
 
